@@ -153,15 +153,21 @@ export async function confirmMetaSelection(formData: FormData) {
 export async function disconnectAccount(accountId: string, workspaceId: string) {
   const supabase = createClient();
   
+  console.log(`[disconnectAccount] Attempting to delete accountId=${accountId} in workspaceId=${workspaceId}`);
+  
   // Both token_vault and connected_accounts will cascade or be deleted, 
   // but let's delete connected_accounts which cascades to token_vault.
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from('connected_accounts')
     .delete()
     .eq('id', accountId)
-    .eq('workspace_id', workspaceId); // Ensure it belongs to this workspace
+    .eq('workspace_id', workspaceId)
+    .select(); // Ensure we can see what was deleted
+
+  console.log(`[disconnectAccount] Supabase delete result:`, JSON.stringify({ data, error }, null, 2));
 
   if (error) {
+    console.error(`[disconnectAccount] FULL ERROR:`, error);
     throw new Error('Failed to disconnect account');
   }
 }

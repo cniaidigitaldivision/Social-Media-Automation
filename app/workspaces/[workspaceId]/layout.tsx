@@ -1,10 +1,7 @@
 import { notFound } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
-import { Sidebar } from '@/components/sidebar';
-import { Header } from '@/components/header';
-import { WorkspaceSwitcher } from '@/components/workspace-switcher';
-import { Modals } from '@/components/modals';
-import { StoreHydrator } from '@/components/store-hydrator';
+import { countPendingApprovals } from '@/lib/queries/posts';
+import { AppShell } from '@/components/app-shell';
 
 /**
  * Shared layout for every /workspaces/[workspaceId]/* page.
@@ -53,21 +50,16 @@ export default async function WorkspaceLayout({
     notFound();
   }
 
+  // Single source of truth, shared with the Approvals queue and the Dashboard KPI.
+  const pendingApprovalsCount = await countPendingApprovals(workspaceId);
+
   return (
-    <div className="app-layout-container">
-      <StoreHydrator workspaces={allWorkspaces || []} currentWorkspaceId={workspaceId} />
-      {/* Left sidebar — workspace-aware links injected via data attribute */}
-      <Sidebar workspaceId={workspaceId} />
-
-      {/* Right panel: header + page content */}
-      <div className="app-main-viewport">
-        <Header />
-        {children}
-      </div>
-
-      {/* Global workspace-switcher overlay & modals */}
-      <WorkspaceSwitcher />
-      <Modals />
-    </div>
+    <AppShell
+      workspaceId={workspaceId}
+      workspaces={allWorkspaces || []}
+      pendingCount={pendingApprovalsCount}
+    >
+      {children}
+    </AppShell>
   );
 }

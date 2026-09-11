@@ -2,19 +2,19 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { PostVariantSchema } from '@/lib/schemas/post';
-import { z } from 'zod';
 
 export type AccountTarget = {
   id: string;
-  platform: 'facebook' | 'instagram';
+  platform: 'facebook' | 'instagram' | 'linkedin' | 'youtube' | 'tiktok';
   name: string;
 };
 
 export type SubmitPostPayload = {
   accounts: AccountTarget[];
-  captions: Record<string, string>; // account.id -> caption text
+  captions: Record<string, string>;   // account.id → caption text
+  titles: Record<string, string>;     // account.id → title (YouTube only; empty string for others)
   mediaUrls: string[];
-  scheduledAt: string | null; // ISO string or null
+  scheduledAt: string | null;         // ISO string or null
 };
 
 export type SubmitPostResult = {
@@ -37,29 +37,39 @@ export async function submitPost(
     return { success: false, serverError: 'You must select at least one account.' };
   }
 
-  // 1. Validate payloads per account
+  // 1. Validate payload per account
   const accountErrors: Record<string, string> = {};
-  const validVariants: Array<{ accountId: string; platform: 'facebook' | 'instagram'; caption: string; media_urls: string[]; scheduled_at: string | null }> = [];
+  const validVariants: Array<{
+    accountId: string;
+    platform: AccountTarget['platform'];
+    title: string | null;
+    caption: string;
+    media_urls: string[];
+    scheduled_at: string | null;
+  }> = [];
 
   for (const account of payload.accounts) {
     const variantData = {
       platform: account.platform,
+      title: payload.titles[account.id] || undefined,
       caption: payload.captions[account.id] || '',
       media_urls: payload.mediaUrls,
-      // Only validate scheduled_at if we aren't saving a pure draft without a date
       scheduled_at: payload.scheduledAt || undefined,
     };
 
     const parsed = PostVariantSchema.safeParse(variantData);
-    
+
     if (!parsed.success) {
       // Pick the first error for simplicity
       const firstError = parsed.error.issues[0];
+      // Prefix title errors so the client can surface them next to the title field
       accountErrors[account.id] = firstError.message;
     } else {
       validVariants.push({
         accountId: account.id,
         platform: account.platform,
+        // Only store title for YouTube; null for all other platforms
+        title: account.platform === 'youtube' ? (parsed.data.title || null) : null,
         caption: parsed.data.caption || '',
         media_urls: parsed.data.media_urls,
         scheduled_at: parsed.data.scheduled_at || null,
@@ -84,19 +94,19 @@ export async function submitPost(
       workspace_id: workspaceId,
       status: postStatus,
       scheduled_at: payload.scheduledAt || null,
-      created_by: null, // As specified, null since no client auth session yet
+      created_by: null,
     })
     .select('id')
     .single();
 
   if (postError || !postData) {
-    console.error('Failed to create parent post:', postError);
+    console.error('Failed to create parent post. FULL POST ERROR:', JSON.stringify(postError, null, 2));
     return { success: false, serverError: 'Database error creating post. Please try again.' };
   }
 
   const postId = postData.id;
 
-  // 4. Insert Variants (Simulating Rollback since Supabase REST API doesn't have native transactions)
+  // 4. Insert Variants
   for (const variant of validVariants) {
     const { error: variantError } = await supabase
       .from('post_variants')
@@ -104,19 +114,25 @@ export async function submitPost(
         post_id: postId,
         connected_account_id: variant.accountId,
         platform: variant.platform,
+        title: variant.title,       // null for non-YouTube platforms
         caption: variant.caption,
         media_urls: variant.media_urls,
-        scheduled_at: variant.scheduled_at,
-        status: postStatus,
+        status: 'pending',
       });
 
     if (variantError) {
-      // Rollback
-      console.error(`Failed to create variant for account ${variant.accountId}:`, variantError);
+      // Rollback parent post
+      console.error(`Failed to create variant for account ${variant.accountId}. FULL VARIANT ERROR:`, {
+        error: variantError,
+        code: variantError?.code,
+        message: variantError?.message,
+        details: variantError?.details,
+        hint: variantError?.hint,
+      });
       await supabase.from('posts').delete().eq('id', postId);
-      return { 
-        success: false, 
-        serverError: `Failed to save post for ${variant.platform}. Your draft has been rolled back.` 
+      return {
+        success: false,
+        serverError: `Failed to save post for ${variant.platform}. Your draft has been rolled back.`
       };
     }
   }
@@ -133,7 +149,6 @@ export async function getUploadSignedUrl(
   const tempId = crypto.randomUUID();
   const filePath = `${workspaceId}/${tempId}/${fileName}`;
 
-  // Use createSignedUploadUrl for secure client-side PUT
   const { data, error } = await supabase.storage
     .from('post-media')
     .createSignedUploadUrl(filePath);
@@ -143,7 +158,6 @@ export async function getUploadSignedUrl(
     throw new Error('Failed to create upload URL');
   }
 
-  // Also construct the final public URL
   const { data: publicData } = supabase.storage
     .from('post-media')
     .getPublicUrl(filePath);

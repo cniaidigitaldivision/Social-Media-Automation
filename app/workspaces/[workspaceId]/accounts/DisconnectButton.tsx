@@ -21,18 +21,13 @@ export function DisconnectButton({ accountId, workspaceId, accountName }: { acco
 
   return (
     <button
-      className="btn-reconnect-teal"
+      type="button"
+      className="btn-disconnect-danger"
       onClick={handleDisconnect}
       disabled={isPending}
-      style={{
-        background: 'transparent',
-        border: '1px solid var(--status-failed)',
-        color: 'var(--status-failed)',
-        opacity: isPending ? 0.6 : 1
-      }}
     >
-      <span style={{ marginRight: '6px' }}>{icons.trash}</span>
-      {isPending ? 'Disconnecting...' : 'Disconnect'}
+      {icons.trash}
+      {isPending ? 'Disconnecting…' : 'Disconnect'}
     </button>
   );
 }

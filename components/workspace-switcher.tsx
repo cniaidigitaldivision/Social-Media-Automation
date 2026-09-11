@@ -41,7 +41,7 @@ export function WorkspaceSwitcher() {
       logo_url: created.logo_url,
       brand_color: '#0F5132'
     };
-    
+
     updateState({
       workspaces: [...state.workspaces, newWs],
     });
@@ -63,21 +63,21 @@ export function WorkspaceSwitcher() {
             {/* Search Workspace Input */}
             <div className="switcher-search-box">
               <span className="switcher-search-icon">{icons.search}</span>
-              <input 
-                type="text" 
-                className="switcher-search-input" 
-                placeholder="Find workspace..." 
+              <input
+                type="text"
+                className="switcher-search-input"
+                placeholder="Find workspace..."
                 id="switcher-filter-input"
                 autoFocus
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}
               />
               {filter && (
-                <button 
-                  onClick={() => setFilter('')} 
+                <button
+                  onClick={() => setFilter('')}
                   style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-light)', display: 'flex', alignItems: 'center' }}
                 >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12" /></svg>
                 </button>
               )}
             </div>
@@ -88,9 +88,9 @@ export function WorkspaceSwitcher() {
                 <div style={{ padding: '1rem', textAlign: 'center', color: 'var(--text-light)', fontSize: '0.875rem' }}>No workspaces found</div>
               ) : (
                 filteredWorkspaces.map((ws: SwitcherWorkspace) => (
-                  <div 
+                  <div
                     key={ws.id}
-                    className={`workspace-item-row ${ws.isCurrent ? 'selected-workspace' : ''}`} 
+                    className={`workspace-item-row ${ws.isCurrent ? 'selected-workspace' : ''}`}
                     onClick={() => handleSelect(ws.id, ws.name)}
                   >
                     <div className="workspace-item-left">
@@ -113,8 +113,8 @@ export function WorkspaceSwitcher() {
 
             {/* Add New Workspace Footer Button */}
             <div className="switcher-footer">
-              <button 
-                className="btn-add-workspace" 
+              <button
+                className="btn-add-workspace"
                 onClick={() => {
                   updateState({
                     modals: {
@@ -133,7 +133,7 @@ export function WorkspaceSwitcher() {
         </div>
       )}
 
-      <NewWorkspaceModal 
+      <NewWorkspaceModal
         isOpen={state.modals.isNewWorkspaceModalOpen}
         onClose={() => {
           updateState({
