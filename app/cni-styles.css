@@ -10,9 +10,12 @@
   --cni-navy: #00453f;
   --cni-navy-raised: #005952;
   --cni-navy-border: #007369;
-  --cni-gold: #D4AF37;
-  --cni-gold-hover: #C09B2C;
-  --cni-gold-soft: #FBF3DC;
+  /* Sampled from public/logo.png: the golden half of the brain mark reads
+     #D8A858 in the body, #E8C878 on the highlights, #D09840 in the shadows. */
+  --cni-gold: #D8A858;
+  --cni-gold-light: #E8C878;
+  --cni-gold-hover: #C08F3C;
+  --cni-gold-soft: #F7EBD4;
   --cni-teal-primary: #005952;
   --cni-teal-hover: #007369;
   --cni-teal-dark: #00453f;
@@ -79,12 +82,13 @@
   --transition-slow: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Reset & Global */
-*, *::before, *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+/* Reset & Global
+   NOTE: the universal `margin: 0; padding: 0; box-sizing: border-box` reset
+   that used to live here was removed. This file is loaded unlayered, after
+   globals.css, so it outranked every Tailwind utility (which Tailwind v4
+   emits inside `@layer utilities`) — `p-2`, `mt-3`, `gap` etc. silently did
+   nothing anywhere in the app. Tailwind preflight already applies the exact
+   same reset in `@layer base`, so nothing is lost by dropping it. */
 
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -4744,6 +4748,7 @@ button, input, select, textarea {
 .dark-table tr:hover td.dash-cell-muted,
 .dark-table tr:hover .dash-cell-caption {
   color: #ffffff !important;
+  background-color: rgba(255, 255, 255, 0.06) !important;
 }
 
 

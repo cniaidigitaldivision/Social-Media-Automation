@@ -196,20 +196,20 @@ export function ComposerClient({ workspace, accounts, brandKit }: any) {
   };
 
   // ── Account groups ──────────────────────────────────────────────────────
-  const fbAccounts  = accounts.filter((a: any) => a.platform === 'facebook');
-  const igAccounts  = accounts.filter((a: any) => a.platform === 'instagram');
-  const liAccounts  = accounts.filter((a: any) => a.platform === 'linkedin');
-  const ttAccounts  = accounts.filter((a: any) => a.platform === 'tiktok');
-  const ytAccounts  = accounts.filter((a: any) => a.platform === 'youtube');
+  const fbAccounts = accounts.filter((a: any) => a.platform === 'facebook');
+  const igAccounts = accounts.filter((a: any) => a.platform === 'instagram');
+  const liAccounts = accounts.filter((a: any) => a.platform === 'linkedin');
+  const ttAccounts = accounts.filter((a: any) => a.platform === 'tiktok');
+  const ytAccounts = accounts.filter((a: any) => a.platform === 'youtube');
 
   // ── Selection flags ─────────────────────────────────────────────────────
   const getSelectedPlatform = (platform: string) =>
     selectedAccounts.some(id => accounts.find((a: any) => a.id === id)?.platform === platform);
 
   const isInstagramSelected = getSelectedPlatform('instagram');
-  const isTikTokSelected    = getSelectedPlatform('tiktok');
-  const isYouTubeSelected   = getSelectedPlatform('youtube');
-  const needsMediaWarn      = (isInstagramSelected || isTikTokSelected || isYouTubeSelected) && mediaUrls.length === 0;
+  const isTikTokSelected = getSelectedPlatform('tiktok');
+  const isYouTubeSelected = getSelectedPlatform('youtube');
+  const needsMediaWarn = (isInstagramSelected || isTikTokSelected || isYouTubeSelected) && mediaUrls.length === 0;
 
   // Schedule input min
   const now = new Date();
@@ -401,10 +401,10 @@ export function ComposerClient({ workspace, accounts, brandKit }: any) {
                 const limit = acc.platform === 'instagram'
                   ? CAPTION_LIMITS.instagram
                   : acc.platform === 'linkedin'
-                  ? CAPTION_LIMITS.linkedin
-                  : acc.platform === 'youtube'
-                  ? CAPTION_LIMITS.youtube_description
-                  : CAPTION_LIMITS.facebook;
+                    ? CAPTION_LIMITS.linkedin
+                    : acc.platform === 'youtube'
+                      ? CAPTION_LIMITS.youtube_description
+                      : CAPTION_LIMITS.facebook;
                 const captionText = platformCaptions[id] ?? sharedCaption;
                 const titleVal = platformTitles[id] ?? '';
 

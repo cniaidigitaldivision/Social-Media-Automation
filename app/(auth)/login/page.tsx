@@ -1,8 +1,11 @@
+
 "use client";
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { icons } from '@/lib/icons';
+
+import { Eye, EyeOff } from 'lucide-react';
+import { createClient } from '@/lib/supabase/client';
 
 type Mode = 'login' | 'signup';
 
@@ -10,6 +13,7 @@ export default function LoginPage() {
   const router = useRouter();
 
   const [mode, setMode] = useState<Mode>('login');
+  const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -21,15 +25,16 @@ export default function LoginPage() {
   const switchMode = (next: Mode) => {
     setMode(next);
     setError('');
+    setFullName('');
     setPassword('');
     setConfirmPassword('');
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
-    if (!email.trim() || !password.trim()) {
+    if (!email.trim() || !password.trim() || (mode === 'signup' && !fullName.trim())) {
       setError('Please fill in all fields.');
       return;
     }
@@ -39,10 +44,41 @@ export default function LoginPage() {
     }
 
     setIsLoading(true);
-    // Pure navigation — no auth logic per task spec
-    setTimeout(() => {
+    const supabase = createClient();
+
+    if (mode === 'login') {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (error) {
+        setError(error.message);
+        setIsLoading(false);
+        return;
+      }
       router.push('/workspaces');
-    }, 600);
+      router.refresh();
+    } else {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: { full_name: fullName },
+        },
+      });
+      if (error) {
+        setError(error.message);
+        setIsLoading(false);
+        return;
+      }
+      if (data.session) {
+        router.push('/workspaces');
+        router.refresh();
+      } else {
+        setError('Please check your email to confirm your account.');
+        setIsLoading(false);
+      }
+    }
   };
 
   const isSignup = mode === 'signup';
@@ -92,31 +128,6 @@ export default function LoginPage() {
         @keyframes lp-fadein {
           from { opacity: 0; transform: translateY(22px); }
           to   { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Brand row */
-        .lp-brand {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          justify-content: center;
-          margin-bottom: 28px;
-        }
-        .lp-logo-box {
-          width: 40px; height: 40px;
-          background: rgba(255,255,255,0.15);
-          border: 1px solid rgba(255,255,255,0.25);
-          border-radius: 10px;
-          display: flex; align-items: center; justify-content: center;
-          backdrop-filter: blur(8px);
-          flex-shrink: 0;
-        }
-        .lp-brand-name {
-          color: #fff;
-          font-size: 15px;
-          font-weight: 600;
-          letter-spacing: -0.01em;
-          opacity: 0.92;
         }
 
         /* White card */
@@ -207,20 +218,6 @@ export default function LoginPage() {
         .lp-input.has-toggle {
           padding-right: 46px;
         }
-        .lp-pw-toggle {
-          position: absolute;
-          right: 12px;
-          bottom: 11px;
-          background: none;
-          border: none;
-          cursor: pointer;
-          color: #94a3b8;
-          padding: 2px;
-          display: flex;
-          align-items: center;
-          transition: color 0.15s;
-        }
-        .lp-pw-toggle:hover { color: #475569; }
 
         /* Error */
         .lp-error {
@@ -316,15 +313,16 @@ export default function LoginPage() {
 
         <div className="lp-card-wrap">
           {/* Brand */}
-          <div className="lp-brand">
-            <div className="lp-logo-box">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                <rect width="24" height="24" rx="6" fill="#D4AF37" fillOpacity="0.2" />
-                <path d="M7 17V7L12 12L17 7V17" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </div>
-            <span className="lp-brand-name">Crescent Nova International</span>
+          <div className="flex justify-center">
+            <img
+              src="/logo.png"
+              alt="Crescent Nova International logo"
+              className="h-28 md:h-32 w-auto object-contain"
+            />
           </div>
+          <p className="mt-4 mb-8 text-center text-xl md:text-2xl font-semibold tracking-wide text-[#DBAD5D]">
+            Crescent Nova International
+          </p>
 
           {/* Card */}
           <div className="lp-card">
@@ -363,6 +361,23 @@ export default function LoginPage() {
             </p>
 
             <form id="auth-form" onSubmit={handleSubmit} noValidate>
+              {/* Full Name — signup only */}
+              {isSignup && (
+                <div className="lp-field-wrap lp-field-reveal">
+                  <label htmlFor="auth-fullname" className="lp-label">Full name</label>
+                  <input
+                    id="auth-fullname"
+                    type="text"
+                    className="lp-input"
+                    placeholder="Laraib Rafique"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    autoComplete="name"
+                    autoFocus={isSignup}
+                  />
+                </div>
+              )}
+
               {/* Email */}
               <div className="lp-field-wrap">
                 <label htmlFor="auth-email" className="lp-label">Work email</label>
@@ -374,55 +389,59 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   autoComplete="email"
-                  autoFocus
+                  autoFocus={!isSignup}
                 />
               </div>
 
               {/* Password */}
               <div className="lp-field-wrap">
                 <label htmlFor="auth-password" className="lp-label">Password</label>
-                <input
-                  id="auth-password"
-                  type={showPassword ? 'text' : 'password'}
-                  className="lp-input has-toggle"
-                  placeholder={isSignup ? 'Create a password' : 'Your password'}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  autoComplete={isSignup ? 'new-password' : 'current-password'}
-                />
-                <button
-                  type="button"
-                  className="lp-pw-toggle"
-                  aria-label={showPassword ? 'Hide password' : 'Show password'}
-                  onClick={() => setShowPassword((v) => !v)}
-                  tabIndex={-1}
-                >
-                  {icons.eye}
-                </button>
+                <div className="relative">
+                  <input
+                    id="auth-password"
+                    type={showPassword ? 'text' : 'password'}
+                    className="lp-input has-toggle"
+                    placeholder={isSignup ? 'Create a password' : 'Your password'}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    autoComplete={isSignup ? 'new-password' : 'current-password'}
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center border-0 bg-transparent p-0 text-gray-400 transition-colors hover:text-gray-600 cursor-pointer"
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                    onClick={() => setShowPassword((v) => !v)}
+                    tabIndex={-1}
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
               </div>
 
               {/* Confirm password — signup only */}
               {isSignup && (
                 <div className="lp-field-wrap lp-field-reveal">
                   <label htmlFor="auth-confirm" className="lp-label">Confirm password</label>
-                  <input
-                    id="auth-confirm"
-                    type={showConfirm ? 'text' : 'password'}
-                    className="lp-input has-toggle"
-                    placeholder="Repeat your password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    autoComplete="new-password"
-                  />
-                  <button
-                    type="button"
-                    className="lp-pw-toggle"
-                    aria-label={showConfirm ? 'Hide confirm password' : 'Show confirm password'}
-                    onClick={() => setShowConfirm((v) => !v)}
-                    tabIndex={-1}
-                  >
-                    {icons.eye}
-                  </button>
+                  <div className="relative">
+                    <input
+                      id="auth-confirm"
+                      type={showConfirm ? 'text' : 'password'}
+                      className="lp-input has-toggle"
+                      placeholder="Repeat your password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      autoComplete="new-password"
+                    />
+                    <button
+                      type="button"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center border-0 bg-transparent p-0 text-gray-400 transition-colors hover:text-gray-600 cursor-pointer"
+                      aria-label={showConfirm ? 'Hide confirm password' : 'Show confirm password'}
+                      onClick={() => setShowConfirm((v) => !v)}
+                      tabIndex={-1}
+                    >
+                      {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
                 </div>
               )}
 

@@ -2,8 +2,10 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { icons } from '@/lib/icons';
+import { createClient } from '@/lib/supabase/client';
+import { LogOut } from 'lucide-react';
 
 interface SidebarProps {
   /** The workspaceId segment from the URL. When provided, all nav links
@@ -56,6 +58,14 @@ function NavItem({
 
 export function Sidebar({ workspaceId, pendingCount }: SidebarProps) {
   const pathname = usePathname() || '';
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push('/login');
+    router.refresh();
+  };
 
   /** Build an absolute path, workspace-scoped when workspaceId is known. */
   const href = (segment: string) => `/workspaces/${workspaceId}/${segment}`;
@@ -64,11 +74,10 @@ export function Sidebar({ workspaceId, pendingCount }: SidebarProps) {
 
   const getLinkClasses = (segment: string, exactMatch = false) => {
     const active = exactMatch ? pathname === segment : isActive(segment);
-    return `nav-link flex items-center gap-3 px-3 py-2 rounded-xl transition-all duration-300 ${
-      active
+    return `nav-link flex items-center gap-3 px-3 py-2 rounded-xl transition-all duration-300 ${active
         ? 'bg-[#007F73]/10 text-[#00A99D] font-medium border border-[#00A99D]/30 shadow-[0_0_15px_rgba(0,169,157,0.15)]'
         : 'text-slate-100/80 hover:bg-white/5 hover:text-white border border-transparent'
-    }`;
+      }`;
   };
 
   /** Props for one workspace-scoped nav row, link or disabled. These are
@@ -148,11 +157,16 @@ export function Sidebar({ workspaceId, pendingCount }: SidebarProps) {
         </ul>
       </nav>
 
-      {/* Sidebar Footer */}
-      <div className="sidebar-footer p-4 border-t border-[#1E2A50]">
-        <button className="footer-link flex items-center gap-3 text-slate-300 hover:text-white w-full transition-colors" onClick={() => alert('User Menu opened')}>
-          <span className="footer-icon opacity-80">{icons.user}</span>
-          <span className="footer-text font-medium">Account</span>
+      {/* Sidebar Footer — simple logout */}
+      <div className="sidebar-footer border-t border-white/10 p-3">
+        <button
+          id="btn-sidebar-logout"
+          type="button"
+          onClick={handleLogout}
+          className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium text-slate-300 transition-colors duration-150 hover:bg-red-500/10 hover:text-red-400"
+        >
+          <LogOut size={16} className="flex-shrink-0" />
+          <span>Logout</span>
         </button>
       </div>
     </aside>

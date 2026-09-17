@@ -11,12 +11,12 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: {
-    default: 'CNI Publisher — Multi-Platform Social Media & CRM Automation Suite',
-    template: '%s | CNI Publisher',
-  },
+  title: 'Postly',
   description:
     'Crescent Nova International — Enterprise Social Media Publishing, Calendar Scheduling, Multi-Platform Approval Queues, and Leads CRM Management.',
+  icons: {
+    icon: '/logo2.png',
+  },
 };
 
 export default function RootLayout({

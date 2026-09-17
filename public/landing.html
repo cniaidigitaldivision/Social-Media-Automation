@@ -1,0 +1,1328 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Postly</title>
+  <meta name="description"
+    content="Postly, by the AI and Digital Division of Crescent Nova International. Compose once, customise per platform, route through human approval, and auto-publish to Facebook, Instagram, LinkedIn, YouTube and TikTok." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="icon" type="image/jpeg" href="/logo2.png" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
+    rel="stylesheet" />
+  <style>
+    /* ============================================================
+   Postly — marketing landing page
+   Palette is inherited from app/cni-styles.css: teal #005952 / #007369
+   on a #040d1a ground. Teal is carried by fills, borders and glows only,
+   never by text, because it cannot meet contrast as text on this ground.
+   ============================================================ */
+    :root {
+      /* brand — from app/cni-styles.css, unchanged */
+      --teal: #005952;
+      --teal-hover: #007369;
+
+      --teal-glow: rgba(0, 115, 105, .45);
+
+      /* dark surface scale */
+      --bg: #040d1a;
+      --bg-raised: #081426;
+      --card: rgba(255, 255, 255, .035);
+      --card-hover: rgba(255, 255, 255, .055);
+      --line: rgba(255, 255, 255, .08);
+      --line-strong: rgba(255, 255, 255, .14);
+
+      --fg: #e9eff6;
+      --fg-muted: #93a6ba;
+      --fg-faint: #64788c;
+
+      /* names used by the design brief, aliased onto the tokens above */
+      --navy-card: var(--bg-raised);
+      --border-bright: rgba(0, 115, 105, .6);
+      --text-muted: var(--fg-muted);
+
+      --maxw: 1180px;
+      --radius: 16px;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box
+    }
+
+    html {
+      scroll-behavior: smooth
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    img {
+      max-width: 100%
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none
+    }
+
+    h1,
+    h2,
+    h3 {
+      font-family: 'Space Grotesk', Inter, sans-serif;
+      font-weight: 600;
+      letter-spacing: -.01em;
+      line-height: 1.08;
+      margin: 0
+    }
+
+    p {
+      margin: 0
+    }
+
+    .wrap {
+      width: 100%;
+      max-width: var(--maxw);
+      margin: 0 auto;
+      padding-inline: 24px
+    }
+
+    /* ---------- animated background: grid + radial teal glow ---------- */
+    .bg-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden
+    }
+
+    .bg-glow {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(110px)
+    }
+
+    .bg-glow-1 {
+      width: 820px;
+      height: 820px;
+      top: -340px;
+      right: -200px;
+      background: radial-gradient(circle, var(--teal-glow) 0%, transparent 68%)
+    }
+
+    .bg-glow-2 {
+      width: 640px;
+      height: 640px;
+      top: 44%;
+      left: -260px;
+      background: radial-gradient(circle, rgba(0, 89, 82, .40) 0%, transparent 70%)
+    }
+
+    .bg-glow-3 {
+      width: 700px;
+      height: 700px;
+      bottom: -320px;
+      left: 38%;
+      background: radial-gradient(circle, rgba(0, 115, 105, .28) 0%, transparent 72%)
+    }
+
+    /* ---------- nav ---------- */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 50;
+      padding-top: env(safe-area-inset-top, 0px);
+      background: transparent;
+      border-bottom: 1px solid transparent;
+    }
+
+    .nav.scrolled {
+      background: rgba(4, 13, 26, .82);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom-color: var(--line);
+    }
+
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      height: 72px
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0
+    }
+
+    .brand img {
+      height: 52px;
+      width: auto;
+      object-fit: contain;
+      display: block
+    }
+
+    .brand-name {
+      font-family: 'Space Grotesk', Inter, sans-serif;
+      font-weight: 800;
+      font-size: 20px
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 30px
+    }
+
+    .nav-links a {
+      font-size: 14.5px;
+      font-weight: 500;
+      color: var(--fg-muted)
+    }
+
+    .nav-links a:hover {
+      color: var(--fg)
+    }
+
+    .nav-cta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0
+    }
+
+    /* ---------- buttons ---------- */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      height: 46px;
+      padding: 0 22px;
+      border-radius: 10px;
+      font-family: Inter, sans-serif;
+      font-size: 14.5px;
+      font-weight: 600;
+      letter-spacing: .01em;
+      border: 1px solid transparent;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .btn-sm {
+      height: 38px;
+      padding: 0 16px;
+      font-size: 14px
+    }
+
+    .btn-primary {
+      background: var(--teal);
+      color: #fff;
+      box-shadow: 0 6px 22px rgba(0, 89, 82, .5)
+    }
+
+    .btn-primary:hover {
+      background: var(--teal-hover);
+      box-shadow: 0 8px 28px rgba(0, 115, 105, .6)
+    }
+
+    .btn-ghost {
+      background: rgba(255, 255, 255, .04);
+      border-color: var(--line-strong);
+      color: var(--fg)
+    }
+
+    .btn-ghost:hover {
+      background: rgba(255, 255, 255, .08);
+      border-color: var(--teal-hover)
+    }
+
+    .btn-bare {
+      color: var(--fg-muted)
+    }
+
+    .btn-bare:hover {
+      color: var(--fg)
+    }
+
+    /* ---------- layout / sections ---------- */
+    main {
+      position: relative;
+      z-index: 1
+    }
+
+    section {
+      padding-block: 104px
+    }
+
+    .sec-head {
+      max-width: 660px;
+      margin: 0 0 56px;
+      text-align: left
+    }
+
+    .sec-head.is-centered {
+      margin-inline: auto;
+      text-align: center
+    }
+
+    .sec-title {
+      font-size: clamp(28px, 4vw, 42px);
+      font-weight: 600
+    }
+
+    .sec-sub {
+      margin-top: 16px;
+      color: var(--fg-muted);
+      font-size: 16.5px;
+      max-width: 560px
+    }
+
+    .sec-head.is-centered .sec-sub {
+      margin-inline: auto
+    }
+
+    /* ---------- hero ---------- */
+    .hero {
+      padding-top: 148px;
+      padding-bottom: 88px
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: center
+    }
+
+    .hero-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 26px
+    }
+
+    .hero-brand img {
+      height: 44px;
+      width: auto;
+      object-fit: contain;
+      display: block
+    }
+
+    .hero-brand span {
+      font-family: 'Space Grotesk', Inter, sans-serif;
+      font-weight: 800;
+      font-size: 26px
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 7px 15px 7px 11px;
+      border-radius: 999px;
+      background: rgba(0, 115, 105, .14);
+      border: 1px solid rgba(0, 115, 105, .55);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--fg);
+      margin-bottom: 26px;
+    }
+
+    .badge-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--teal-hover);
+      flex-shrink: 0
+    }
+
+    .hero h1 {
+      font-size: clamp(38px, 6.2vw, 56px);
+      font-weight: 600;
+      letter-spacing: -1px;
+      line-height: 1.1
+    }
+
+    .hero-sub {
+      margin-top: 22px;
+      font-size: 17.5px;
+      color: var(--fg-muted);
+      max-width: 560px
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 36px
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: 44px;
+      margin-top: 52px;
+      padding-top: 32px;
+      border-top: 1px solid var(--line);
+      flex-wrap: wrap
+    }
+
+    .stat-num {
+      font-family: 'Space Grotesk', Inter, sans-serif;
+      font-weight: 700;
+      font-size: 30px;
+      color: var(--fg);
+      line-height: 1.1
+    }
+
+    .stat-label {
+      font-size: 13.5px;
+      color: var(--fg-faint);
+      margin-top: 4px
+    }
+
+    /* hero image frame — stays visible with an empty src */
+    .hero-frame {
+      position: relative;
+      border-radius: 16px;
+      overflow: hidden;
+      background: var(--navy-card);
+      border: 1px solid var(--border-bright);
+      box-shadow: 0 0 60px rgba(0, 89, 82, .25), 0 30px 60px rgba(0, 0, 0, .4);
+    }
+
+    .hero-frame-inner {
+      position: relative;
+      aspect-ratio: 16/10;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-image:
+        linear-gradient(to right, rgba(255, 255, 255, .035) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, .035) 1px, transparent 1px);
+      background-size: 64px 64px;
+    }
+
+    /* honest placeholder — sits BEHIND the img, covered once a real src is set */
+    .frame-hint {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      color: var(--text-muted);
+      text-align: center;
+      padding: 24px;
+    }
+
+    #hero-image {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block
+    }
+
+    /* ---------- platform strip ---------- */
+    .strip {
+      padding-block: 60px;
+      border-block: 1px solid var(--line);
+      background: rgba(255, 255, 255, .012)
+    }
+
+    .strip-label {
+      text-align: center;
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: .01em;
+      color: var(--fg-faint);
+      margin-bottom: 30px
+    }
+
+    .strip-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 16px 44px
+    }
+
+    .strip-item {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      opacity: .75
+    }
+
+    .strip-emoji {
+      font-size: 21px;
+      line-height: 1
+    }
+
+    .strip-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--fg)
+    }
+
+    /* ---------- features ---------- */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px
+    }
+
+    .feature-card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 30px 26px 32px;
+    }
+
+    .feature-icon {
+      width: 46px;
+      height: 46px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 115, 105, .32);
+      border: 1px solid rgba(0, 115, 105, .55);
+      color: var(--fg);
+      margin-bottom: 20px;
+    }
+
+    .feature-card h3 {
+      font-family: Inter, sans-serif;
+      font-weight: 600;
+      font-size: 18px;
+      letter-spacing: normal;
+      line-height: 1.35;
+      margin-bottom: 11px
+    }
+
+    .feature-card p {
+      font-size: 14.5px;
+      color: var(--fg-muted);
+      line-height: 1.66
+    }
+
+    /* ---------- how it works ---------- */
+    .steps {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 26px
+    }
+
+    .steps::before {
+      content: "";
+      position: absolute;
+      top: 26px;
+      left: 12%;
+      right: 12%;
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--teal-hover) 12%, var(--teal-hover) 88%, transparent);
+      opacity: .55;
+    }
+
+    .step {
+      position: relative;
+      text-align: center;
+      padding-inline: 8px
+    }
+
+    .step-num {
+      position: relative;
+      z-index: 1;
+      width: 52px;
+      height: 52px;
+      margin: 0 auto 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--teal);
+      border: 1px solid rgba(0, 115, 105, .7);
+      font-family: 'Space Grotesk', Inter, sans-serif;
+      font-weight: 800;
+      font-size: 19px;
+      color: #fff;
+      box-shadow: 0 0 0 7px var(--bg), 0 0 26px rgba(0, 115, 105, .36);
+    }
+
+    .step h3 {
+      font-family: Inter, sans-serif;
+      font-weight: 600;
+      font-size: 16px;
+      letter-spacing: normal;
+      line-height: 1.4;
+      margin-bottom: 9px
+    }
+
+    .step p {
+      font-size: 14px;
+      color: var(--fg-muted)
+    }
+
+    /* ---------- platforms ---------- */
+    .platform-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px
+    }
+
+    .platform-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 24px 22px;
+    }
+
+    .platform-card.is-soon {
+      opacity: .6
+    }
+
+    .platform-emoji {
+      font-size: 27px;
+      line-height: 1.15;
+      flex-shrink: 0
+    }
+
+    .platform-body {
+      min-width: 0
+    }
+
+    .platform-name {
+      font-family: 'Space Grotesk', Inter, sans-serif;
+      font-weight: 800;
+      font-size: 17.5px;
+      margin-bottom: 9px
+    }
+
+    .platform-note {
+      font-size: 13.5px;
+      color: var(--fg-muted);
+      margin-top: 10px
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 4px 11px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: .02em;
+    }
+
+    .pill-live {
+      background: rgba(0, 115, 105, .38);
+      border: 1px solid rgba(0, 115, 105, .75);
+      color: var(--fg)
+    }
+
+    .pill-soon {
+      background: rgba(255, 255, 255, .05);
+      border: 1px solid var(--line-strong);
+      color: var(--fg-muted)
+    }
+
+    .pill-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+      flex-shrink: 0
+    }
+
+    /* ---------- final CTA ---------- */
+    .cta {
+      text-align: center
+    }
+
+    .cta-box {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 68px 32px;
+      border-radius: 24px;
+      border: 1px solid var(--line-strong);
+      background: radial-gradient(ellipse 70% 100% at 50% 0%, rgba(0, 115, 105, .22), transparent 70%), var(--bg-raised);
+    }
+
+    .cta h2 {
+      font-size: clamp(30px, 4.6vw, 46px)
+    }
+
+    .cta p {
+      margin: 18px auto 0;
+      color: var(--fg-muted);
+      font-size: 17px;
+      max-width: 560px
+    }
+
+    .cta-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      justify-content: center;
+      margin-top: 36px
+    }
+
+    /* ---------- footer ---------- */
+    .footer {
+      border-top: 1px solid var(--line);
+      padding-block: 36px;
+      padding-bottom: calc(36px + env(safe-area-inset-bottom, 0px));
+      position: relative;
+      z-index: 1
+    }
+
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap
+    }
+
+    .footer-copy {
+      font-size: 13.5px;
+      color: var(--fg-faint)
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .footer-links a {
+      color: var(--fg-faint);
+      font-size: 13.5px;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover {
+      color: var(--fg);
+    }
+
+    .footer-divider {
+      width: 1px;
+      height: 12px;
+      background: var(--line-strong);
+    }
+
+    /* ============================================================
+   Animation — everything is opt-in behind prefers-reduced-motion.
+   With reduced motion the page renders fully visible and static.
+   ============================================================ */
+    @media (prefers-reduced-motion: no-preference) {
+      @keyframes navFadeIn {
+        from {
+          opacity: 0
+        }
+
+        to {
+          opacity: 1
+        }
+      }
+
+      @keyframes slideInLeft {
+        from {
+          opacity: 0;
+          transform: translateX(-24px)
+        }
+
+        to {
+          opacity: 1;
+          transform: none
+        }
+      }
+
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(18px)
+        }
+
+        to {
+          opacity: 1;
+          transform: none
+        }
+      }
+
+      @keyframes slideInRight {
+        from {
+          opacity: 0;
+          transform: translateX(46px)
+        }
+
+        to {
+          opacity: 1;
+          transform: none
+        }
+      }
+
+      @keyframes float {
+
+        0%,
+        100% {
+          transform: translateY(0)
+        }
+
+        50% {
+          transform: translateY(-10px)
+        }
+      }
+
+      /* transitions are motion too, so they sit behind the same query */
+      .nav {
+        transition: background .3s ease, border-color .3s ease, backdrop-filter .3s ease
+      }
+
+      .nav-links a {
+        transition: color .18s ease
+      }
+
+      .btn {
+        transition: background .18s ease, border-color .18s ease, color .18s ease, box-shadow .18s ease
+      }
+
+      /* the one deliberate moment: the hero load sequence */
+      .nav {
+        animation: navFadeIn .3s ease 0s both
+      }
+
+      .badge {
+        animation: slideInLeft .4s cubic-bezier(.16, 1, .3, 1) .15s both
+      }
+
+      .hero h1 {
+        animation: fadeUp .5s cubic-bezier(.16, 1, .3, 1) .3s both
+      }
+
+      .hero-sub {
+        animation: fadeUp .4s cubic-bezier(.16, 1, .3, 1) .5s both
+      }
+
+      .hero-actions {
+        animation: fadeUp .4s cubic-bezier(.16, 1, .3, 1) .65s both
+      }
+
+      .hero-stats {
+        animation: fadeUp .4s cubic-bezier(.16, 1, .3, 1) .8s both
+      }
+
+      /* slides in, then hovers: long ease, small travel, no bounce */
+      .hero-frame {
+        animation: slideInRight .6s cubic-bezier(.16, 1, .3, 1) .4s both, float 6s ease-in-out 1.2s infinite
+      }
+
+      /* single entrance for feature + platform cards; stagger set from JS */
+      .reveal {
+        opacity: 0;
+        transform: translateY(16px);
+        transition: opacity .5s cubic-bezier(.16, 1, .3, 1), transform .5s cubic-bezier(.16, 1, .3, 1)
+      }
+
+      .reveal.is-in {
+        opacity: 1;
+        transform: none
+      }
+    }
+
+    /* ---------- responsive ---------- */
+    @media (max-width:980px) {
+      section {
+        padding-block: 80px
+      }
+
+      .hero {
+        padding-top: 124px
+      }
+
+      .hero-grid {
+        grid-template-columns: 1fr;
+        gap: 52px
+      }
+
+      .hero-sub {
+        max-width: none
+      }
+
+      .feature-grid {
+        grid-template-columns: repeat(2, 1fr)
+      }
+
+      .platform-grid {
+        grid-template-columns: repeat(2, 1fr)
+      }
+
+      .steps {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 40px 26px
+      }
+
+      .steps::before {
+        display: none
+      }
+    }
+
+    @media (max-width:640px) {
+      .nav-links {
+        display: none
+      }
+
+      .nav-inner {
+        height: 64px
+      }
+
+      .hero {
+        padding-top: 108px;
+        padding-bottom: 64px
+      }
+
+      .hero-stats {
+        gap: 28px
+      }
+
+      .feature-grid {
+        grid-template-columns: 1fr
+      }
+
+      .platform-grid {
+        grid-template-columns: 1fr
+      }
+
+      .steps {
+        grid-template-columns: 1fr;
+        gap: 34px
+      }
+
+      .cta-box {
+        padding: 48px 22px
+      }
+
+      .footer-inner {
+        flex-direction: column;
+        text-align: center
+      }
+
+      .footer-links {
+        flex-direction: column;
+        gap: 12px;
+        margin-top: 12px;
+      }
+
+      .footer-divider {
+        display: none;
+      }
+
+      .hero-actions .btn,
+      .cta-actions .btn {
+        width: 100%
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- animated background -->
+  <div class="bg-layer" aria-hidden="true">
+
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+    <div class="bg-glow bg-glow-3"></div>
+  </div>
+
+  <!-- nav -->
+  <header class="nav" id="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="#top">
+        <img src="/logo.png" alt="AI &amp; Digital Division" />
+
+      </a>
+      <nav class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#how">How it works</a>
+        <a href="#platforms">Platforms</a>
+      </nav>
+      <div class="nav-cta">
+        <a class="btn btn-sm btn-bare" href="/login">Log in</a>
+        <a class="btn btn-sm btn-primary" href="/login">Get started</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="top">
+
+    <!-- hero -->
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div class="hero-copy">
+
+
+          <div class="badge"><span class="badge-dot"></span>AI-Powered &middot; Social Media Automation</div>
+
+          <h1>Post once.<br />Reach everywhere.</h1>
+
+          <p class="hero-sub">
+            Postly turns one draft into a per-platform publishing pipeline. Compose and
+            preview each caption, send it through your team&rsquo;s approval queue, and let the
+            scheduler push it live to every connected account at the right minute.
+          </p>
+
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="/login">Get started</a>
+            <a class="btn btn-ghost" href="#how">See how it works</a>
+          </div>
+
+          <div class="hero-stats">
+            <div>
+              <div class="stat-num">5+</div>
+              <div class="stat-label">Platforms</div>
+            </div>
+            <div>
+              <div class="stat-num">10x</div>
+              <div class="stat-label">Faster</div>
+            </div>
+            <div>
+              <div class="stat-num">100%</div>
+              <div class="stat-label">Human-approved</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-frame">
+          <div class="hero-frame-inner">
+            <div class="frame-hint" aria-hidden="true">Product screenshot</div>
+            <img id="hero-image" src="/image.png" alt="Postly dashboard" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- platform strip -->
+    <div class="strip">
+      <div class="wrap">
+        <p class="strip-label">Publish directly to every major platform</p>
+        <div class="strip-row">
+          <div class="strip-item"><span class="strip-emoji"><svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#1877F2" width="1em" height="1em"><path d="M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085 1.848-5.978 5.858-5.978.401 0 .955.042 1.468.103a8.68 8.68 0 0 1 1.141.195v3.325a8.623 8.623 0 0 0-.653-.036 26.805 26.805 0 0 0-.733-.009c-.707 0-1.259.096-1.675.309a1.686 1.686 0 0 0-.679.622c-.258.42-.374.995-.374 1.752v1.297h3.919l-.386 2.103-.287 1.564h-3.246v8.245C19.396 23.238 24 18.179 24 12.044c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.628 3.874 10.35 9.101 11.647Z"/></svg></span><span class="strip-name">Facebook</span>
+          </div>
+          <div class="strip-item"><span class="strip-emoji"><svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#E4405F" width="1em" height="1em"><path d="M7.0301.084c-1.2768.0602-2.1487.264-2.911.5634-.7888.3075-1.4575.72-2.1228 1.3877-.6652.6677-1.075 1.3368-1.3802 2.127-.2954.7638-.4956 1.6365-.552 2.914-.0564 1.2775-.0689 1.6882-.0626 4.947.0062 3.2586.0206 3.6671.0825 4.9473.061 1.2765.264 2.1482.5635 2.9107.308.7889.72 1.4573 1.388 2.1228.6679.6655 1.3365 1.0743 2.1285 1.38.7632.295 1.6361.4961 2.9134.552 1.2773.056 1.6884.069 4.9462.0627 3.2578-.0062 3.668-.0207 4.9478-.0814 1.28-.0607 2.147-.2652 2.9098-.5633.7889-.3086 1.4578-.72 2.1228-1.3881.665-.6682 1.0745-1.3378 1.3795-2.1284.2957-.7632.4966-1.636.552-2.9124.056-1.2809.0692-1.6898.063-4.948-.0063-3.2583-.021-3.6668-.0817-4.9465-.0607-1.2797-.264-2.1487-.5633-2.9117-.3084-.7889-.72-1.4568-1.3876-2.1228C21.2982 1.33 20.628.9208 19.8378.6165 19.074.321 18.2017.1197 16.9244.0645 15.6471.0093 15.236-.005 11.977.0014 8.718.0076 8.31.0215 7.0301.0839m.1402 21.6932c-1.17-.0509-1.8053-.2453-2.2287-.408-.5606-.216-.96-.4771-1.3819-.895-.422-.4178-.6811-.8186-.9-1.378-.1644-.4234-.3624-1.058-.4171-2.228-.0595-1.2645-.072-1.6442-.079-4.848-.007-3.2037.0053-3.583.0607-4.848.05-1.169.2456-1.805.408-2.2282.216-.5613.4762-.96.895-1.3816.4188-.4217.8184-.6814 1.3783-.9003.423-.1651 1.0575-.3614 2.227-.4171 1.2655-.06 1.6447-.072 4.848-.079 3.2033-.007 3.5835.005 4.8495.0608 1.169.0508 1.8053.2445 2.228.408.5608.216.96.4754 1.3816.895.4217.4194.6816.8176.9005 1.3787.1653.4217.3617 1.056.4169 2.2263.0602 1.2655.0739 1.645.0796 4.848.0058 3.203-.0055 3.5834-.061 4.848-.051 1.17-.245 1.8055-.408 2.2294-.216.5604-.4763.96-.8954 1.3814-.419.4215-.8181.6811-1.3783.9-.4224.1649-1.0577.3617-2.2262.4174-1.2656.0595-1.6448.072-4.8493.079-3.2045.007-3.5825-.006-4.848-.0608M16.953 5.5864A1.44 1.44 0 1 0 18.39 4.144a1.44 1.44 0 0 0-1.437 1.4424M5.8385 12.012c.0067 3.4032 2.7706 6.1557 6.173 6.1493 3.4026-.0065 6.157-2.7701 6.1506-6.1733-.0065-3.4032-2.771-6.1565-6.174-6.1498-3.403.0067-6.156 2.771-6.1496 6.1738M8 12.0077a4 4 0 1 1 4.008 3.9921A3.9996 3.9996 0 0 1 8 12.0077"/></svg></span><span class="strip-name">Instagram</span>
+          </div>
+          <div class="strip-item"><span class="strip-emoji"><svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#0A66C2" width="1em" height="1em"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></span><span class="strip-name">LinkedIn</span>
+          </div>
+          <div class="strip-item"><span class="strip-emoji"><svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#FF0000" width="1em" height="1em"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></span><span
+              class="strip-name">YouTube</span></div>
+          <div class="strip-item"><span class="strip-emoji"><svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#FFFFFF" width="1em" height="1em"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg></span><span class="strip-name">TikTok</span></div>
+          <div class="strip-item"><span class="strip-emoji"><svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#E60023" width="1em" height="1em"><path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.162-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.401.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.354-.629-2.758-1.379l-.749 2.848c-.269 1.045-1.004 2.352-1.498 3.146 1.123.345 2.306.535 3.55.535 6.607 0 11.985-5.365 11.985-11.987C23.97 5.39 18.592.026 11.985.026L12.017 0z"/></svg></span><span class="strip-name">Pinterest</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- features -->
+    <section id="features">
+      <div class="wrap">
+        <div class="sec-head">
+          <h2 class="sec-title">Everything between the idea and the post</h2>
+          <p class="sec-sub">Six parts of the pipeline, built for teams that publish across every brand they run.</p>
+        </div>
+
+        <div class="feature-grid" data-stagger="60">
+          <article class="feature-card reveal">
+            <div class="feature-icon" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 20h9" />
+                <path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z" />
+              </svg>
+            </div>
+            <h3>Smart Composer</h3>
+            <p>Write the post once, then customise the caption for each platform without leaving the editor. A live
+              preview renders your post exactly as each network will show it, and media validation catches the rules
+              before you schedule. Instagram, TikTok and YouTube each require a video or image, and YouTube will not
+              accept a post without a Title.</p>
+          </article>
+
+          <article class="feature-card reveal">
+            <div class="feature-icon" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 11l3 3L22 4" />
+                <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
+              </svg>
+            </div>
+            <h3>Team Approvals</h3>
+            <p>Every post passes human review before it can go out. Reviewers work from a single queue where they can
+              edit captions per platform, swap the attached media, and approve or reject without opening the composer.
+              Nothing reaches a live account that a person has not signed off on.</p>
+          </article>
+
+          <article class="feature-card reveal">
+            <div class="feature-icon" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" />
+                <path d="M16 2v4M8 2v4M3 10h18" />
+              </svg>
+            </div>
+            <h3>Visual Calendar</h3>
+            <p>A colour-coded month view of every scheduled, published and failed post across all of your workspaces at
+              once. Click any entry to open its full detail, and approve or reject it inline without breaking your place
+              in the calendar.</p>
+          </article>
+
+          <article class="feature-card reveal">
+            <div class="feature-icon" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" />
+                <path d="M7 11V7a5 5 0 0110 0v4" />
+              </svg>
+            </div>
+            <h3>Secure Token Vault</h3>
+            <p>All OAuth tokens are encrypted at rest with AES-256-GCM. They are never stored in the automation layer.
+              The publishing engine fetches them securely at publish time only, so a credential never sits idle where it
+              does not need to be.</p>
+          </article>
+
+          <article class="feature-card reveal">
+            <div class="feature-icon" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M13 2L3 14h8l-1 8 10-12h-8l1-8z" />
+              </svg>
+            </div>
+            <h3>Automated Publishing</h3>
+            <p>An n8n-powered engine checks every minute for posts that have come due and publishes them to Facebook,
+              Instagram, LinkedIn, TikTok and YouTube. Each platform gets its own logic, from Instagram&rsquo;s two-step
+              container flow to YouTube&rsquo;s resumable upload, so the quirks are handled for you.</p>
+          </article>
+
+          <article class="feature-card reveal">
+            <div class="feature-icon" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
+              </svg>
+            </div>
+            <h3>Multi-Workspace</h3>
+            <p>Run every business brand in its own workspace, each with its own connected accounts and content pipeline.
+              A per-workspace brand kit holds the voice, tone, hashtags, banned words and CTA library, so the right
+              rules follow the right brand automatically.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- how it works -->
+    <section id="how">
+      <div class="wrap">
+        <div class="sec-head is-centered">
+          <h2 class="sec-title">Four steps, then it runs itself</h2>
+        </div>
+
+        <div class="steps">
+          <div class="step">
+            <div class="step-num">1</div>
+            <h3>Connect your accounts</h3>
+            <p>OAuth per platform. Tokens are encrypted and stored.</p>
+          </div>
+          <div class="step">
+            <div class="step-num">2</div>
+            <h3>Compose your post</h3>
+            <p>Caption, media, platform targets, schedule time, live preview.</p>
+          </div>
+          <div class="step">
+            <div class="step-num">3</div>
+            <h3>Team approves</h3>
+            <p>Edit per platform, approve or reject from the approvals queue.</p>
+          </div>
+          <div class="step">
+            <div class="step-num">4</div>
+            <h3>Auto-published</h3>
+            <p>n8n publishes at the scheduled time, live links saved back to the dashboard.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- platforms -->
+    <section id="platforms">
+      <div class="wrap">
+        <div class="sec-head is-centered">
+          <h2 class="sec-title">What is live today</h2>
+          <p class="sec-sub">Current integration status, straight from the publishing engine.</p>
+        </div>
+
+        <div class="platform-grid" data-stagger="60">
+          <article class="platform-card reveal">
+            <span class="platform-emoji" aria-hidden="true"><svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#1877F2" width="1em" height="1em"><path d="M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085 1.848-5.978 5.858-5.978.401 0 .955.042 1.468.103a8.68 8.68 0 0 1 1.141.195v3.325a8.623 8.623 0 0 0-.653-.036 26.805 26.805 0 0 0-.733-.009c-.707 0-1.259.096-1.675.309a1.686 1.686 0 0 0-.679.622c-.258.42-.374.995-.374 1.752v1.297h3.919l-.386 2.103-.287 1.564h-3.246v8.245C19.396 23.238 24 18.179 24 12.044c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.628 3.874 10.35 9.101 11.647Z"/></svg></span>
+            <div class="platform-body">
+              <h3 class="platform-name">Facebook</h3>
+              <span class="pill pill-live"><span class="pill-dot"></span>Live</span>
+            </div>
+          </article>
+
+          <article class="platform-card reveal">
+            <span class="platform-emoji" aria-hidden="true"><svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#E4405F" width="1em" height="1em"><path d="M7.0301.084c-1.2768.0602-2.1487.264-2.911.5634-.7888.3075-1.4575.72-2.1228 1.3877-.6652.6677-1.075 1.3368-1.3802 2.127-.2954.7638-.4956 1.6365-.552 2.914-.0564 1.2775-.0689 1.6882-.0626 4.947.0062 3.2586.0206 3.6671.0825 4.9473.061 1.2765.264 2.1482.5635 2.9107.308.7889.72 1.4573 1.388 2.1228.6679.6655 1.3365 1.0743 2.1285 1.38.7632.295 1.6361.4961 2.9134.552 1.2773.056 1.6884.069 4.9462.0627 3.2578-.0062 3.668-.0207 4.9478-.0814 1.28-.0607 2.147-.2652 2.9098-.5633.7889-.3086 1.4578-.72 2.1228-1.3881.665-.6682 1.0745-1.3378 1.3795-2.1284.2957-.7632.4966-1.636.552-2.9124.056-1.2809.0692-1.6898.063-4.948-.0063-3.2583-.021-3.6668-.0817-4.9465-.0607-1.2797-.264-2.1487-.5633-2.9117-.3084-.7889-.72-1.4568-1.3876-2.1228C21.2982 1.33 20.628.9208 19.8378.6165 19.074.321 18.2017.1197 16.9244.0645 15.6471.0093 15.236-.005 11.977.0014 8.718.0076 8.31.0215 7.0301.0839m.1402 21.6932c-1.17-.0509-1.8053-.2453-2.2287-.408-.5606-.216-.96-.4771-1.3819-.895-.422-.4178-.6811-.8186-.9-1.378-.1644-.4234-.3624-1.058-.4171-2.228-.0595-1.2645-.072-1.6442-.079-4.848-.007-3.2037.0053-3.583.0607-4.848.05-1.169.2456-1.805.408-2.2282.216-.5613.4762-.96.895-1.3816.4188-.4217.8184-.6814 1.3783-.9003.423-.1651 1.0575-.3614 2.227-.4171 1.2655-.06 1.6447-.072 4.848-.079 3.2033-.007 3.5835.005 4.8495.0608 1.169.0508 1.8053.2445 2.228.408.5608.216.96.4754 1.3816.895.4217.4194.6816.8176.9005 1.3787.1653.4217.3617 1.056.4169 2.2263.0602 1.2655.0739 1.645.0796 4.848.0058 3.203-.0055 3.5834-.061 4.848-.051 1.17-.245 1.8055-.408 2.2294-.216.5604-.4763.96-.8954 1.3814-.419.4215-.8181.6811-1.3783.9-.4224.1649-1.0577.3617-2.2262.4174-1.2656.0595-1.6448.072-4.8493.079-3.2045.007-3.5825-.006-4.848-.0608M16.953 5.5864A1.44 1.44 0 1 0 18.39 4.144a1.44 1.44 0 0 0-1.437 1.4424M5.8385 12.012c.0067 3.4032 2.7706 6.1557 6.173 6.1493 3.4026-.0065 6.157-2.7701 6.1506-6.1733-.0065-3.4032-2.771-6.1565-6.174-6.1498-3.403.0067-6.156 2.771-6.1496 6.1738M8 12.0077a4 4 0 1 1 4.008 3.9921A3.9996 3.9996 0 0 1 8 12.0077"/></svg></span>
+            <div class="platform-body">
+              <h3 class="platform-name">Instagram</h3>
+              <span class="pill pill-live"><span class="pill-dot"></span>Live</span>
+            </div>
+          </article>
+
+          <article class="platform-card reveal">
+            <span class="platform-emoji" aria-hidden="true"><svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#0A66C2" width="1em" height="1em"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></span>
+            <div class="platform-body">
+              <h3 class="platform-name">LinkedIn</h3>
+              <span class="pill pill-live"><span class="pill-dot"></span>Live</span>
+              <p class="platform-note">via Community Management API</p>
+            </div>
+          </article>
+
+          <article class="platform-card reveal">
+            <span class="platform-emoji" aria-hidden="true"><svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#FF0000" width="1em" height="1em"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></span>
+            <div class="platform-body">
+              <h3 class="platform-name">YouTube</h3>
+              <span class="pill pill-live"><span class="pill-dot"></span>Live</span>
+              <p class="platform-note">Resumable upload, private until audit clears</p>
+            </div>
+          </article>
+
+          <article class="platform-card reveal">
+            <span class="platform-emoji" aria-hidden="true"><svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#FFFFFF" width="1em" height="1em"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg></span>
+            <div class="platform-body">
+              <h3 class="platform-name">TikTok</h3>
+              <span class="pill pill-live"><span class="pill-dot"></span>Live</span>
+              <p class="platform-note">via Buffer</p>
+            </div>
+          </article>
+
+          <article class="platform-card is-soon reveal">
+            <span class="platform-emoji" aria-hidden="true"><svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#E60023" width="1em" height="1em"><path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.162-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.401.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.354-.629-2.758-1.379l-.749 2.848c-.269 1.045-1.004 2.352-1.498 3.146 1.123.345 2.306.535 3.55.535 6.607 0 11.985-5.365 11.985-11.987C23.97 5.39 18.592.026 11.985.026L12.017 0z"/></svg></span>
+            <div class="platform-body">
+              <h3 class="platform-name">Pinterest</h3>
+              <span class="pill pill-soon"><span class="pill-dot"></span>Coming soon</span>
+              <p class="platform-note">Not yet connected to the publishing engine</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- final CTA -->
+    <section class="cta">
+      <div class="wrap">
+        <div class="cta-box">
+          <h2>Ready to stop posting manually?</h2>
+          <p>Connect your accounts once and let the approvals queue and the scheduler carry the rest, across every brand
+            you run.</p>
+          <div class="cta-actions">
+            <a class="btn btn-primary" href="/login">Get started free</a>
+            <a class="btn btn-ghost" href="/login">Log in</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer-inner">
+      <a class="brand" href="#top">
+        <img src="/logo.png" alt="AI &amp; Digital Division" />
+      </a>
+      <div class="footer-links">
+        <a href="/privacy">Privacy Policy</a>
+        <span class="footer-divider"></span>
+        <a href="/terms">Terms of Service</a>
+      </div>
+      <p class="footer-copy">&copy; 2026 Crescent Nova International &middot; AI &amp; Digital Division</p>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      'use strict';
+
+      // Nav background darkens once scrolled past 60px.
+      var nav = document.getElementById('nav');
+      var ticking = false;
+      function onScroll() {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(function () {
+          nav.classList.toggle('scrolled', window.scrollY > 60);
+          ticking = false;
+        });
+      }
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+
+      // Scroll reveals. Stagger step (ms) comes from data-stagger on the container.
+      var targets = document.querySelectorAll('.reveal');
+
+      if (!('IntersectionObserver' in window)) {
+        Array.prototype.forEach.call(targets, function (el) { el.classList.add('is-in'); });
+        return;
+      }
+
+      var observer = new IntersectionObserver(function (entries) {
+        Array.prototype.forEach.call(entries, function (entry) {
+          if (!entry.isIntersecting) return;
+
+          var el = entry.target;
+          var group = el.parentElement;
+          var step = group && group.dataset ? parseInt(group.dataset.stagger, 10) : 0;
+
+          if (step > 0) {
+            var peers = Array.prototype.filter.call(group.children, function (c) {
+              return c.classList.contains('reveal');
+            });
+            el.style.transitionDelay = (peers.indexOf(el) * step) + 'ms';
+          }
+
+          el.classList.add('is-in');
+          observer.unobserve(el);
+        });
+      }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+
+      Array.prototype.forEach.call(targets, function (el) { observer.observe(el); });
+    })();
+  </script>
+
+</body>
+
+</html>

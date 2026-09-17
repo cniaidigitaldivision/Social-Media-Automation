@@ -24,9 +24,7 @@ import { WorkspacesClient, type WorkspaceSummary } from './WorkspacesClient';
 
 export const dynamic = 'force-dynamic';
 
-export const metadata = {
-  title: 'All Workspaces',
-};
+
 
 const ACCOUNT_ACTIVE_STATUS = 'active';
 const ACCOUNT_ATTENTION_STATUSES = ['needs_reconnect', 'revoked'];

@@ -66,7 +66,7 @@ export default async function ApprovalsPage({
           {error
             ? 'Pending posts could not be loaded — see the server log for details.'
             : pendingCount > 0
-              ? `${pendingCount} post${pendingCount === 1 ? '' : 's'} waiting on your review · posts · status = pending_approval`
+              ? `${pendingCount} post${pendingCount === 1 ? '' : 's'} waiting on your review`
               : 'Posts submitted for review land here before they go out.'}
         </p>
       </div>

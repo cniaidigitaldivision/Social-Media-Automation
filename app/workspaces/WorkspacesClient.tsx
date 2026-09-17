@@ -136,11 +136,6 @@ export function WorkspacesClient({
               </button>
             </div>
 
-            <p className="ws-source-note">
-              Counts read live from Supabase — connected_accounts · status = active (plus
-              needs_reconnect / revoked for the attention line), posts · status = scheduled, and
-              posts · status = pending_approval.
-            </p>
           </>
         )}
       </main>
