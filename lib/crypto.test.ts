@@ -1,4 +1,4 @@
-import { encrypt, decrypt } from './crypto';
+import { encrypt, decrypt, signState, verifyState as verifyStateFn } from './crypto';
 import assert from 'assert';
 
 function runTests() {
@@ -32,10 +32,9 @@ function runTests() {
   
   // Test 4: HMAC signing and verification
   const payload = JSON.stringify({ workspaceId: 'w-123', nonce: 'abc', exp: Date.now() + 600000 });
-  const signed = encrypt.signState ? encrypt.signState(payload) : require('./crypto').signState(payload);
-  const verifyState = require('./crypto').verifyState;
+  const signed = signState(payload);
   
-  const verified = verifyState(signed);
+  const verified = verifyStateFn(signed);
   assert.strictEqual(verified, payload, 'Verified payload should match original');
   console.log('✓ HMAC verification passed');
   
@@ -44,7 +43,7 @@ function runTests() {
   const tamperedSig = sig.substring(0, sig.length - 1) + (sig.endsWith('A') ? 'B' : 'A');
   let sigThrew = false;
   try {
-    verifyState(`${payload64}.${tamperedSig}`);
+    verifyStateFn(`${payload64}.${tamperedSig}`);
   } catch (e) {
     sigThrew = true;
   }
