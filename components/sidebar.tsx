@@ -60,6 +60,17 @@ export function Sidebar({ workspaceId, pendingCount }: SidebarProps) {
   const pathname = usePathname() || '';
   const router = useRouter();
 
+  React.useEffect(() => {
+    const handleKeydown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && document.body.classList.contains('sidebar-open')) {
+        document.body.classList.remove('sidebar-open');
+      }
+    };
+    
+    document.addEventListener('keydown', handleKeydown);
+    return () => document.removeEventListener('keydown', handleKeydown);
+  }, []);
+
   const handleLogout = async () => {
     const supabase = createClient();
     await supabase.auth.signOut();
@@ -92,9 +103,27 @@ export function Sidebar({ workspaceId, pendingCount }: SidebarProps) {
   });
 
   return (
-    <aside className="app-sidebar text-slate-50 border-r flex flex-col" style={{ borderColor: 'rgba(255,255,255,0.1)' }} id="app-sidebar">
-      {/* Sidebar Brand */}
-      <div className="sidebar-brand-wrapper">
+    <>
+      {/* Mobile Backdrop */}
+      <div 
+        className="sidebar-backdrop" 
+        onClick={() => document.body.classList.remove('sidebar-open')}
+        aria-hidden="true"
+      />
+      
+      <aside className="app-sidebar text-slate-50 border-r flex flex-col" style={{ borderColor: 'rgba(255,255,255,0.1)' }} id="app-sidebar">
+        {/* Mobile Close Button */}
+        <button
+          className="sidebar-close-btn"
+          onClick={() => document.body.classList.remove('sidebar-open')}
+          aria-label="Close Sidebar"
+          type="button"
+        >
+          {icons.close}
+        </button>
+
+        {/* Sidebar Brand */}
+        <div className="sidebar-brand-wrapper">
         <Link href={workspaceId ? href('dashboard') : '/workspaces'} className="sidebar-brand">
           <div className="sidebar-brand-logo-container" style={{ width: '180px', height: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             <img src="/logo.png" alt="Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
@@ -157,8 +186,7 @@ export function Sidebar({ workspaceId, pendingCount }: SidebarProps) {
         </ul>
       </nav>
 
-      {/* Sidebar Footer — simple logout */}
-      <div className="sidebar-footer border-t border-white/10 p-3">
+      <div className="sidebar-footer mt-auto border-t border-white/10 p-3">
         <button
           id="btn-sidebar-logout"
           type="button"
@@ -170,5 +198,6 @@ export function Sidebar({ workspaceId, pendingCount }: SidebarProps) {
         </button>
       </div>
     </aside>
+    </>
   );
 }

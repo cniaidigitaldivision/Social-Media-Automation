@@ -280,39 +280,56 @@ export function CalendarClient({
           <div className="calendar-month-cells">
             {days.map((day) => {
               const dayPosts = postsByDay[day.key] || [];
-              const visible = dayPosts.slice(0, MAX_PILLS_PER_DAY);
-              const hidden = dayPosts.length - visible.length;
+              const visibleCount = MAX_PILLS_PER_DAY;
+              const hidden = Math.max(0, dayPosts.length - visibleCount);
+
+              // Mobile formatted date: e.g. Fri, Sep 11
+              let mobileDateStr = '';
+              try {
+                const d = new Date(day.key + "T12:00:00Z");
+                mobileDateStr = new Intl.DateTimeFormat('en-US', {
+                  weekday: 'short',
+                  month: 'short',
+                  day: 'numeric'
+                }).format(d);
+              } catch (e) {
+                mobileDateStr = day.label;
+              }
 
               return (
                 <div
                   key={day.key}
-                  className={`day-cell${day.inMonth ? '' : ' muted-cell'}${day.isToday ? ' today-cell' : ''}${day.key === activeDayKey ? ' selected-cell' : ''}`}
+                  className={`day-cell${day.inMonth ? '' : ' muted-cell'}${day.isToday ? ' today-cell' : ''}${day.key === activeDayKey ? ' selected-cell' : ''}${dayPosts.length === 0 ? ' no-posts-day' : ' has-posts-day'}`}
                   onClick={() => openDay(day.key)}
                 >
                   <span className={day.isToday ? 'day-number-badge' : 'day-number'}>{day.dayNumber}</span>
+                  <div className="mobile-day-heading">{mobileDateStr}</div>
 
                   <div className="cal-day-pills">
-                    {visible.map((post) => (
-                      <button
-                        key={post.id}
-                        type="button"
-                        className={`cal-post-pill cal-pill-${post.status}`}
-                        title={`${post.timeLabel} · ${POST_STATUS_LABELS[post.status] || post.status} · ${post.preview}`}
-                        onClick={(event) => {
-                          event.stopPropagation();
-                          openDay(day.key, post.id);
-                        }}
-                      >
-                        <span className="cal-pill-dot" />
-                        <span className="cal-pill-time">{post.timeLabel}</span>
-                        <span className="cal-pill-text">{post.preview}</span>
-                      </button>
-                    ))}
+                    {dayPosts.map((post, index) => {
+                      const isHiddenDesktop = index >= visibleCount;
+                      return (
+                        <button
+                          key={post.id}
+                          type="button"
+                          className={`cal-post-pill cal-pill-${post.status} ${isHiddenDesktop ? 'desktop-hidden' : ''}`}
+                          title={`${post.timeLabel} · ${POST_STATUS_LABELS[post.status] || post.status} · ${post.preview}`}
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            openDay(day.key, post.id);
+                          }}
+                        >
+                          <span className="cal-pill-dot" />
+                          <span className="cal-pill-time">{post.timeLabel}</span>
+                          <span className="cal-pill-text">{post.preview}</span>
+                        </button>
+                      );
+                    })}
 
                     {hidden > 0 && (
                       <button
                         type="button"
-                        className="cal-more-link"
+                        className="cal-more-link mobile-hidden"
                         onClick={(event) => {
                           event.stopPropagation();
                           openDay(day.key);

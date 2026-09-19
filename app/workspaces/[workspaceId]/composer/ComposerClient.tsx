@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { PlatformPreview } from './PlatformPreview';
 import { submitPost, getUploadSignedUrl, AccountTarget } from './actions';
 import { CAPTION_LIMITS } from '@/lib/schemas/post';
 import { Hash, Type, UploadCloud, Trash2, Calendar, AlertTriangle, CheckCircle, RefreshCcw, Send } from 'lucide-react';
@@ -216,47 +215,13 @@ export function ComposerClient({ workspace, accounts, brandKit }: any) {
   const tzOffset = now.getTimezoneOffset() * 60000;
   const localIso = (new Date(Date.now() - tzOffset)).toISOString().slice(0, 16);
 
-  /** Renders a column of account chips for one platform */
-  const renderAccountColumn = (
-    colAccounts: any[],
-    platform: string,
-    label: string
-  ) => (
-    <div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', fontSize: '13px', fontWeight: 600, color: 'var(--text-muted)' }}>
-        <span style={{ width: 16, height: 16, display: 'inline-flex' }}>{platformIcon(platform)}</span> {label}
-      </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-        {colAccounts.length === 0 ? (
-          <div style={{ fontSize: '13px', color: 'var(--text-muted)', padding: '12px', border: '1px dashed var(--border-card)', borderRadius: '12px', textAlign: 'center', backgroundColor: '#f8fafc' }}>
-            Not connected
-          </div>
-        ) : (
-          colAccounts.map((acc: any) => {
-            const isDisabled = acc.status !== 'active';
-            const isSelected = selectedAccounts.includes(acc.id);
-            return (
-              <label key={acc.id} className={`account-chip ${isDisabled ? 'disabled' : ''} ${isSelected ? 'selected' : ''}`}>
-                <input
-                  type="checkbox"
-                  className="account-chip-checkbox"
-                  checked={isSelected}
-                  onChange={() => handleAccountToggle(acc.id)}
-                  disabled={isDisabled}
-                />
-                <span style={{ fontSize: '14px', color: 'var(--text-main)', fontWeight: 600, flex: 1 }}>{acc.account_name}</span>
-                {isDisabled && (
-                  <Link href={`/workspaces/${workspace.id}/accounts`} style={{ fontSize: '12px', color: '#ea580c', pointerEvents: 'auto', fontWeight: 600, textDecoration: 'none' }}>
-                    ⚠ Reconnect
-                  </Link>
-                )}
-              </label>
-            );
-          })
-        )}
-      </div>
-    </div>
-  );
+  const connectedPlatforms = [
+    { id: 'facebook', label: 'Facebook', items: fbAccounts },
+    { id: 'instagram', label: 'Instagram', items: igAccounts },
+    { id: 'linkedin', label: 'LinkedIn', items: liAccounts },
+    { id: 'tiktok', label: 'TikTok', items: ttAccounts },
+    { id: 'youtube', label: 'YouTube', items: ytAccounts }
+  ].filter(p => p.items.length > 0);
 
   return (
     <div className="composer-page-layout page-content-wrapper">
@@ -279,14 +244,17 @@ export function ComposerClient({ workspace, accounts, brandKit }: any) {
                 <span className={`status-badge ${SUCCESS_BADGE_CLASS[successInfo.status] || 'badge-draft'}`}>
                   {successInfo.status.replace(/_/g, ' ')}
                 </span>
-                {successInfo.scheduledAt
-                  ? `Scheduled for ${new Date(successInfo.scheduledAt).toLocaleString()}`
-                  : 'No publish time set'}
+                {successInfo.scheduledAt ? (
+                  <span>Scheduled for {new Date(successInfo.scheduledAt).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })}</span>
+                ) : (
+                  <span>Saved successfully</span>
+                )}
+                <span>• {successInfo.accountCount} {successInfo.accountCount === 1 ? 'account' : 'accounts'}</span>
               </span>
             </div>
             <button
+              type="button"
               onClick={() => setSuccessInfo(null)}
-              aria-label="Dismiss confirmation"
               style={{ marginLeft: 'auto', background: 'none', border: 'none', color: 'inherit', cursor: 'pointer', fontSize: '12px', fontWeight: 600 }}
             >
               Dismiss
@@ -295,20 +263,42 @@ export function ComposerClient({ workspace, accounts, brandKit }: any) {
         )}
 
         {/* 1. Target Accounts */}
+        {/* 1. Target Accounts */}
         <div className="composer-section-card">
           <span className="section-label">Target Accounts</span>
 
-          {/* Row 1: Facebook / Instagram / LinkedIn */}
-          <div style={{ display: 'grid', gap: '20px', gridTemplateColumns: '1fr 1fr 1fr', marginBottom: '20px' }}>
-            {renderAccountColumn(fbAccounts, 'facebook', 'Facebook')}
-            {renderAccountColumn(igAccounts, 'instagram', 'Instagram')}
-            {renderAccountColumn(liAccounts, 'linkedin', 'LinkedIn')}
-          </div>
-
-          {/* Row 2: TikTok / YouTube */}
-          <div style={{ display: 'grid', gap: '20px', gridTemplateColumns: '1fr 1fr' }}>
-            {renderAccountColumn(ttAccounts, 'tiktok', 'TikTok')}
-            {renderAccountColumn(ytAccounts, 'youtube', 'YouTube')}
+          <div className="account-targets-grid">
+            {connectedPlatforms.map(platform => (
+              <React.Fragment key={platform.id}>
+                {platform.items.map((acc: any) => {
+                  const isDisabled = acc.status !== 'active';
+                  const isSelected = selectedAccounts.includes(acc.id);
+                  return (
+                    <label key={acc.id} className={`account-chip ${isDisabled ? 'disabled' : ''} ${isSelected ? 'selected' : ''}`} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <span style={{ width: 18, height: 18, display: 'inline-flex' }}>{platformIcon(platform.id)}</span>
+                        <span style={{ fontSize: '14px', color: 'var(--text-main)', fontWeight: 600 }}>{platform.label}</span>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        {isDisabled && (
+                          <Link href={`/workspaces/${workspace.id}/accounts`} style={{ fontSize: '12px', color: '#ea580c', pointerEvents: 'auto', fontWeight: 600, textDecoration: 'none' }}>
+                            ⚠ Reconnect
+                          </Link>
+                        )}
+                        <input
+                          type="checkbox"
+                          className="account-chip-checkbox"
+                          style={{ margin: 0 }}
+                          checked={isSelected}
+                          onChange={() => handleAccountToggle(acc.id)}
+                          disabled={isDisabled}
+                        />
+                      </div>
+                    </label>
+                  );
+                })}
+              </React.Fragment>
+            ))}
           </div>
 
           {errors['accounts'] && <div className="field-error-msg">{errors['accounts']}</div>}
@@ -600,61 +590,6 @@ export function ComposerClient({ workspace, accounts, brandKit }: any) {
         </div>
       </div>
 
-      {/* Right Pane: Live Preview */}
-      <div className="composer-right-pane">
-        <h2 style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-main)', marginBottom: '16px' }}>Live Preview</h2>
-
-        {selectedAccounts.length > 0 ? (
-          <>
-            <div className="preview-tab-switcher" style={{ marginBottom: '16px' }}>
-              {selectedAccounts.map(id => {
-                const acc = accounts.find((a: any) => a.id === id);
-                if (!acc) return null;
-                const isActive = activePreviewTab === id;
-                return (
-                  <button
-                    key={id}
-                    className={`platform-chip ${isActive ? 'active' : ''}`}
-                    onClick={() => setActivePreviewTab(id)}
-                    style={{ padding: '8px 16px', fontSize: '13px', fontWeight: 600, borderRadius: '20px' }}
-                  >
-                    <span style={{ width: 14, height: 14, display: 'inline-flex' }}>
-                      {platformIcon(acc.platform)}
-                    </span>
-                    {acc.account_name}
-                  </button>
-                );
-              })}
-            </div>
-
-            <div className="preview-device-mockup">
-              {activePreviewTab && (() => {
-                const acc = accounts.find((a: any) => a.id === activePreviewTab);
-                if (!acc) return null;
-                return (
-                  <PlatformPreview
-                    platform={acc.platform}
-                    accountName={acc.account_name}
-                    caption={isPerPlatform ? (platformCaptions[activePreviewTab] || '') : sharedCaption}
-                    mediaUrls={mediaUrls}
-                    title={platformTitles[activePreviewTab] || ''}
-                  />
-                );
-              })()}
-            </div>
-          </>
-        ) : (
-          <div className="preview-device-mockup" style={{ alignItems: 'center', justifyContent: 'center', backgroundColor: '#f8fafc', padding: '40px 20px', textAlign: 'center' }}>
-            <div style={{ width: '64px', height: '64px', borderRadius: '50%', backgroundColor: 'rgba(0,127,115,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '24px', color: 'var(--cni-teal-primary)' }}>
-              <Send size={28} />
-            </div>
-            <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#0f172a', marginBottom: '8px' }}>Your post will appear here</h3>
-            <p style={{ color: 'var(--text-muted)', fontSize: '14px', maxWidth: '240px', lineHeight: 1.5 }}>
-              Select an account on the left and start crafting your content to see a live preview.
-            </p>
-          </div>
-        )}
-      </div>
     </div>
   );
 }
