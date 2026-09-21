@@ -60,6 +60,22 @@ export function Sidebar({ workspaceId, pendingCount }: SidebarProps) {
   const pathname = usePathname() || '';
   const router = useRouter();
 
+  const [fallbackWorkspaceId, setFallbackWorkspaceId] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (workspaceId) {
+      localStorage.setItem('lastActiveWorkspaceId', workspaceId);
+      setFallbackWorkspaceId(workspaceId);
+    } else {
+      const saved = localStorage.getItem('lastActiveWorkspaceId');
+      if (saved) {
+        setFallbackWorkspaceId(saved);
+      }
+    }
+  }, [workspaceId]);
+
+  const activeWorkspaceId = workspaceId || fallbackWorkspaceId;
+
   React.useEffect(() => {
     const handleKeydown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && document.body.classList.contains('sidebar-open')) {
@@ -79,7 +95,7 @@ export function Sidebar({ workspaceId, pendingCount }: SidebarProps) {
   };
 
   /** Build an absolute path, workspace-scoped when workspaceId is known. */
-  const href = (segment: string) => `/workspaces/${workspaceId}/${segment}`;
+  const href = (segment: string) => `/workspaces/${activeWorkspaceId}/${segment}`;
 
   const isActive = (segment: string) => pathname.includes(segment);
 
@@ -98,8 +114,8 @@ export function Sidebar({ workspaceId, pendingCount }: SidebarProps) {
     label,
     badge,
     className: getLinkClasses(segment),
-    href: workspaceId ? href(segment) : '',
-    disabled: !workspaceId,
+    href: activeWorkspaceId ? href(segment) : '',
+    disabled: !activeWorkspaceId,
   });
 
   return (
@@ -124,7 +140,7 @@ export function Sidebar({ workspaceId, pendingCount }: SidebarProps) {
 
         {/* Sidebar Brand */}
         <div className="sidebar-brand-wrapper">
-        <Link href={workspaceId ? href('dashboard') : '/workspaces'} className="sidebar-brand">
+        <Link href={activeWorkspaceId ? href('dashboard') : '/workspaces'} className="sidebar-brand">
           <div className="sidebar-brand-logo-container" style={{ width: '180px', height: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             <img src="/logo.png" alt="Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
           </div>
@@ -134,7 +150,7 @@ export function Sidebar({ workspaceId, pendingCount }: SidebarProps) {
 
       {/* Primary Action Button */}
       <div className="sidebar-action-wrapper p-4">
-        {workspaceId ? (
+        {activeWorkspaceId ? (
           <Link href={href('composer')} className="btn-create-post flex items-center justify-center gap-2 bg-teal-700 hover:bg-teal-600 text-white py-2.5 px-4 rounded-xl transition-colors shadow-sm font-medium" id="btn-sidebar-create-post" style={{ textDecoration: 'none' }}>
             <span className="btn-icon">{icons.plus}</span>
             <span className="btn-text">Create Post</span>
@@ -181,6 +197,16 @@ export function Sidebar({ workspaceId, pendingCount }: SidebarProps) {
                 </svg>
               </span>
               <span className="nav-text">All Workspaces</span>
+            </Link>
+          </li>
+          <li className="nav-item">
+            <Link href="/admin" className={getLinkClasses('/admin', true)}>
+              <span className="nav-icon opacity-80">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+              </span>
+              <span className="nav-text">Admin Dashboard</span>
             </Link>
           </li>
         </ul>

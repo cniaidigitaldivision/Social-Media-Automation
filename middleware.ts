@@ -2,6 +2,16 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 
 export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  // Internal API routes are authenticated exclusively via the x-internal-secret
+  // header inside each route handler. They are never called by a browser session
+  // (e.g. n8n server-to-server calls), so they must bypass the Supabase session
+  // check entirely. Let them pass through untouched.
+  if (pathname.startsWith('/api/internal/')) {
+    return NextResponse.next();
+  }
+
   let supabaseResponse = NextResponse.next({
     request,
   });
@@ -34,11 +44,11 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const { pathname } = request.nextUrl;
   const isLoginRoute = pathname.startsWith('/login');
 
   // "/" is rewritten to the public marketing page (see next.config.ts), so it
   // must stay reachable when signed out rather than bouncing to /login.
+  // NOTE: /api/internal/* is handled above before this point and never reaches here.
   const isPublicRoute = pathname === '/' || pathname === '/privacy' || pathname === '/terms';
 
   if (isLoginRoute && user) {

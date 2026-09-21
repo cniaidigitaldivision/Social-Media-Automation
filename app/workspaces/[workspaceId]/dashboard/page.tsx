@@ -396,24 +396,7 @@ export default async function DashboardPage({
               </div>
             </Link>
 
-            <Link
-              href={accountsHref}
-              className={`dash-card dash-metric-card${attentionAccountCount > 0 ? ' dash-metric-alert' : ''}`}
-            >
-              <div className="dash-metric-head">
-                <span className="dash-metric-label">Needs attention</span>
-                <span className="dash-metric-icon tint-amber">{icons.alertCircle}</span>
-              </div>
-              <div className="dash-metric-value-row">
-                <span className="dash-metric-number">{attentionAccountCount}</span>
-                {attentionAccountCount > 0 && (
-                  <>
-                    <span className="kpi-dot-red-pulse" />
-                    <span className="btn-review-pill">Reconnect</span>
-                  </>
-                )}
-              </div>
-            </Link>
+
 
             <Link href={approvalsHref} className="dash-card dash-metric-card">
               <div className="dash-metric-head">
