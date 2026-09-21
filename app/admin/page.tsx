@@ -110,7 +110,7 @@ export default async function AdminDashboard(props: { searchParams: Promise<{ [k
   // 3. Posts Data within Date Range
   const { data: rangeVariantsRaw } = await supabase
     .from('post_variants')
-    .select('id, status, platform, published_at')
+    .select('id, status, platform, published_at, updated_at')
     .gte('updated_at', dateFilterStr);
 
   const rangeVariants = rangeVariantsRaw || [];
@@ -201,26 +201,55 @@ export default async function AdminDashboard(props: { searchParams: Promise<{ [k
   const dayCount = range === 'today' ? 1 : range === '7d' ? 7 : range === '30d' ? 30 : range === '3m' ? 90 : 30; // default 30
   
   const activityOverTime: Record<string, number> = {};
-  for (let i = 0; i < dayCount; i++) {
-    const d = new Date(startDate);
-    d.setDate(d.getDate() + i);
-    const dateStr = d.toISOString().split('T')[0];
-    activityOverTime[dateStr] = 0;
+  for (let i = dayCount - 1; i >= 0; i--) {
+    const d = new Date(endDate);
+    d.setDate(d.getDate() - i);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    const localDateStr = `${year}-${month}-${day}`;
+    activityOverTime[localDateStr] = 0;
   }
 
   rangeVariants.forEach((v) => {
-    if (v.status === 'published' && v.published_at) {
-      const dateStr = v.published_at.split('T')[0];
-      if (activityOverTime[dateStr] !== undefined) {
-        activityOverTime[dateStr]++;
+    if (v.status === 'published') {
+      const dateVal = v.published_at || v.updated_at;
+      if (dateVal) {
+        const d = new Date(dateVal);
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        const localDateStr = `${year}-${month}-${day}`;
+        if (activityOverTime[localDateStr] !== undefined) {
+          activityOverTime[localDateStr]++;
+        } else {
+          activityOverTime[localDateStr] = 1;
+        }
       }
     }
   });
 
-  const activityChartData = Object.entries(activityOverTime).map(([date, count]) => ({
-    date,
-    count,
-  }));
+  const activityChartData = Object.entries(activityOverTime)
+    .sort((a, b) => a[0].localeCompare(b[0]))
+    .map(([date, count]) => ({
+      date,
+      count,
+    }));
+
+  console.log("--- DEBUG START ---");
+  console.log("Total Posts Published:", totalPostsPublished);
+  console.log("Filtered Published Posts length:", rangeVariants.filter(v => v.status === 'published').length);
+  console.log("Activity Chart Data (non-zero):", activityChartData.filter(d => d.count > 0));
+  console.log("--- DEBUG END ---");
+
+  try {
+    const fs = require('fs');
+    fs.writeFileSync('./scratch_debug_payload.json', JSON.stringify({
+      totalPostsPublished,
+      activityChartData,
+      rangeVariants: rangeVariants.filter(v => v.status === 'published')
+    }, null, 2));
+  } catch(e) {}
 
   // 8. Per-workspace breakdown table data (All-time context for table)
   const { data: workspaces } = await supabase
