@@ -125,7 +125,7 @@ export function AdminClient({ data }: { data: AdminData }) {
 
   const platformGlyph = (platform: string) => {
     const glyph = (icons as any)[platform.toLowerCase()];
-    if (!glyph) return <span className="cal-inline-icon">{icons.layoutDashboard}</span>;
+    if (!glyph) return <span className="cal-inline-icon">{icons.dashboard}</span>;
     return <span className="cal-inline-icon opacity-80" style={{ width: 14, height: 14 }}>{glyph}</span>;
   };
 
