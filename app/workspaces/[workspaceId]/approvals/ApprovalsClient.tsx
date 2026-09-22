@@ -309,7 +309,7 @@ export default function ApprovalsClient({ workspaceId, initialPosts, timezone }:
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 {platformFilter !== 'all' && (
-                  <span style={{ display: 'flex', width: '16px', justifyContent: 'center' }}>
+                  <span style={{ display: 'flex', width: platformFilter === 'youtube' ? '20px' : '16px', justifyContent: 'center' }}>
                     {platformFilter === 'facebook' && icons.facebook}
                     {platformFilter === 'instagram' && icons.instagram}
                     {platformFilter === 'tiktok' && icons.tiktok}
@@ -405,7 +405,7 @@ export default function ApprovalsClient({ workspaceId, initialPosts, timezone }:
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                       {opt.icon && (
-                        <span style={{ display: 'flex', width: '16px', justifyContent: 'center' }}>
+                        <span style={{ display: 'flex', width: opt.id === 'youtube' ? '20px' : '16px', justifyContent: 'center' }}>
                           {opt.icon}
                         </span>
                       )}

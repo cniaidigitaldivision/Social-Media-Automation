@@ -276,7 +276,7 @@ export function ComposerClient({ workspace, accounts, brandKit }: any) {
                   return (
                     <label key={acc.id} className={`account-chip ${isDisabled ? 'disabled' : ''} ${isSelected ? 'selected' : ''}`} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <span style={{ width: 18, height: 18, display: 'inline-flex' }}>{platformIcon(platform.id)}</span>
+                        <span style={{ width: platform.id === 'youtube' ? 20 : 18, height: platform.id === 'youtube' ? 20 : 18, display: 'inline-flex' }}>{platformIcon(platform.id)}</span>
                         <span style={{ fontSize: '14px', color: 'var(--text-main)', fontWeight: 600 }}>{platform.label}</span>
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -334,7 +334,7 @@ export function ComposerClient({ workspace, accounts, brandKit }: any) {
                         <div key={id} style={{ marginBottom: '10px' }}>
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
                             <label htmlFor={`yt-title-${id}`} style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                              <span style={{ width: 12, height: 12, display: 'inline-flex' }}>{icons.youtube}</span>
+                              <span style={{ width: 20, height: 20, display: 'inline-flex' }}>{icons.youtube}</span>
                               Video Title for <em style={{ fontStyle: 'normal', color: 'var(--text-muted)' }}>{acc?.account_name}</em>
                               <span style={{ color: 'var(--status-failed)' }}>*</span>
                             </label>

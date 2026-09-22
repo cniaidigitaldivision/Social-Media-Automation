@@ -71,7 +71,8 @@ const isVideo = (url: string) => /\.(mp4|webm|mov)(\?|$)/i.test(url);
 
 function platformGlyph(platform: string) {
   const glyph = (icons as Record<string, React.ReactNode>)[platform];
-  return <span className="dash-platform-glyph">{glyph ?? icons.globe}</span>;
+  const isYt = platform === 'youtube';
+  return <span className="dash-platform-glyph" style={isYt ? { width: '20px', height: '20px' } : undefined}>{glyph ?? icons.globe}</span>;
 }
 
 /** Cumulative account count at the end of each of the last N weeks. */

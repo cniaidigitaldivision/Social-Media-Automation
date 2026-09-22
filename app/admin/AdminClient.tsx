@@ -122,9 +122,10 @@ export function AdminClient({ data }: { data: AdminData }) {
   };
 
   const platformGlyph = (platform: string) => {
+    const isYt = platform.toLowerCase() === 'youtube';
     const glyph = (icons as any)[platform.toLowerCase()];
     if (!glyph) return <span className="inline-flex items-center justify-center w-4 h-4 text-slate-500">{icons.dashboard}</span>;
-    return <span className="inline-flex items-center justify-center w-4 h-4 opacity-80">{glyph}</span>;
+    return <span className={`inline-flex items-center justify-center opacity-80 ${isYt ? 'w-5 h-5' : 'w-4 h-4'}`}>{glyph}</span>;
   };
 
   const TrendIndicator = ({ value }: { value: number }) => {
