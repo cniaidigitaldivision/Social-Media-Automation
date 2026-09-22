@@ -6,10 +6,11 @@ export const CAPTION_LIMITS = {
   linkedin: 3000,
   youtube_description: 5000,
   youtube_title: 100,
+  pinterest: 500,
 };
 
 export const PostVariantSchema = z.object({
-  platform: z.enum(['facebook', 'instagram', 'linkedin', 'youtube', 'tiktok']),
+  platform: z.enum(['facebook', 'instagram', 'linkedin', 'youtube', 'tiktok', 'pinterest']),
   title: z.string().optional(),        // YouTube only — distinct required Title field
   caption: z.string().optional(),
   media_urls: z.array(z.string().url()).default([]),
@@ -105,6 +106,24 @@ export const PostVariantSchema = z.object({
         code: z.ZodIssueCode.custom,
         message: 'TikTok variants MUST have at least one media_url (video)',
         path: ['media_urls']
+      });
+    }
+  }
+
+  // Pinterest validation — image required, caption capped at 500 chars
+  if (data.platform === 'pinterest') {
+    if (!data.media_urls || data.media_urls.length === 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Pinterest variants MUST have at least one media_url (image)',
+        path: ['media_urls']
+      });
+    }
+    if (data.caption && data.caption.length > CAPTION_LIMITS.pinterest) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: `Pinterest description max length is ${CAPTION_LIMITS.pinterest.toLocaleString()} chars`,
+        path: ['caption']
       });
     }
   }

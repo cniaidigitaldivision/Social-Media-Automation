@@ -33,6 +33,7 @@ const SUPPORTED_PLATFORMS = [
   { id: 'linkedin', name: 'LinkedIn', canConnect: true },
   { id: 'tiktok', name: 'TikTok', canConnect: true },
   { id: 'youtube', name: 'YouTube', canConnect: true },
+  { id: 'pinterest', name: 'Pinterest', canConnect: true },
 ];
 
 export default async function AccountsPage({

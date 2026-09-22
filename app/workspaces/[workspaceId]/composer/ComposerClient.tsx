@@ -38,6 +38,7 @@ function platformIcon(platform: string): React.ReactNode {
     linkedin: icons.linkedin,
     tiktok: icons.tiktok,
     youtube: icons.youtube,
+    pinterest: icons.pinterest,
   };
   return map[platform] ?? null;
 }
@@ -200,6 +201,7 @@ export function ComposerClient({ workspace, accounts, brandKit }: any) {
   const liAccounts = accounts.filter((a: any) => a.platform === 'linkedin');
   const ttAccounts = accounts.filter((a: any) => a.platform === 'tiktok');
   const ytAccounts = accounts.filter((a: any) => a.platform === 'youtube');
+  const piAccounts = accounts.filter((a: any) => a.platform === 'pinterest');
 
   // ── Selection flags ─────────────────────────────────────────────────────
   const getSelectedPlatform = (platform: string) =>
@@ -208,7 +210,8 @@ export function ComposerClient({ workspace, accounts, brandKit }: any) {
   const isInstagramSelected = getSelectedPlatform('instagram');
   const isTikTokSelected = getSelectedPlatform('tiktok');
   const isYouTubeSelected = getSelectedPlatform('youtube');
-  const needsMediaWarn = (isInstagramSelected || isTikTokSelected || isYouTubeSelected) && mediaUrls.length === 0;
+  const isPinterestSelected = getSelectedPlatform('pinterest');
+  const needsMediaWarn = (isInstagramSelected || isTikTokSelected || isYouTubeSelected || isPinterestSelected) && mediaUrls.length === 0;
 
   // Schedule input min
   const now = new Date();
@@ -220,7 +223,8 @@ export function ComposerClient({ workspace, accounts, brandKit }: any) {
     { id: 'instagram', label: 'Instagram', items: igAccounts },
     { id: 'linkedin', label: 'LinkedIn', items: liAccounts },
     { id: 'tiktok', label: 'TikTok', items: ttAccounts },
-    { id: 'youtube', label: 'YouTube', items: ytAccounts }
+    { id: 'youtube', label: 'YouTube', items: ytAccounts },
+    { id: 'pinterest', label: 'Pinterest', items: piAccounts }
   ].filter(p => p.items.length > 0);
 
   return (
@@ -541,6 +545,11 @@ export function ComposerClient({ workspace, accounts, brandKit }: any) {
           {isYouTubeSelected && mediaUrls.length === 0 && (
             <div className="instagram-media-warn">
               <AlertTriangle size={14} /> YouTube requires at least one video.
+            </div>
+          )}
+          {isPinterestSelected && mediaUrls.length === 0 && (
+            <div className="instagram-media-warn">
+              <AlertTriangle size={14} /> Pinterest requires at least one image.
             </div>
           )}
         </div>

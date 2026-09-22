@@ -4,7 +4,7 @@ import React from 'react';
 import { Globe, MoreHorizontal, Heart, MessageCircle, Send, Bookmark, ThumbsUp, MessageSquare, Share2, Repeat2, Play, Music2, Video } from 'lucide-react';
 
 interface PlatformPreviewProps {
-  platform: 'facebook' | 'instagram' | 'linkedin' | 'tiktok' | 'youtube';
+  platform: 'facebook' | 'instagram' | 'linkedin' | 'tiktok' | 'youtube' | 'pinterest';
   accountName: string;
   caption: string;
   mediaUrls: string[];
@@ -350,6 +350,53 @@ export function PlatformPreview({ platform, accountName, caption, mediaUrls, tit
           <button className="preview-edit-btn" style={{ flexShrink: 0, alignSelf: 'flex-start' }}>
             <MoreHorizontal size={16} />
           </button>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Pinterest ─────────────────────────────────────────────────────────────
+  if (platform === 'pinterest') {
+    return (
+      <div style={{
+        background: '#fff',
+        borderRadius: '16px',
+        overflow: 'hidden',
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+        boxShadow: '0 1px 4px rgba(0,0,0,0.12)',
+        padding: '12px'
+      }}>
+        {mediaUrls.length > 0 ? (
+          <div style={{ borderRadius: '16px', overflow: 'hidden' }}>
+            {mediaUrls[0].match(/\.(mp4|webm)$/i) ? (
+              <video src={mediaUrls[0]} style={{ width: '100%', display: 'block' }} controls />
+            ) : (
+              <img src={mediaUrls[0]} alt="Pin media" style={{ width: '100%', display: 'block' }} />
+            )}
+          </div>
+        ) : (
+          <div style={{ width: '100%', height: '200px', background: '#f0f0f0', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ color: '#606060', fontSize: '13px' }}>Attach an image to preview</div>
+          </div>
+        )}
+        
+        {caption && (
+          <div style={{ marginTop: '12px', padding: '0 4px', fontSize: '14px', fontWeight: 600, color: '#111', whiteSpace: 'pre-wrap' }}>
+            {caption}
+          </div>
+        )}
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '12px', padding: '0 4px' }}>
+          <div style={{
+            width: '32px', height: '32px', borderRadius: '50%',
+            background: '#E60023', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            color: '#fff', fontWeight: 700, fontSize: '12px'
+          }}>
+            {avatarInitials}
+          </div>
+          <div style={{ fontSize: '13px', color: '#111' }}>
+            {accountName}
+          </div>
         </div>
       </div>
     );
